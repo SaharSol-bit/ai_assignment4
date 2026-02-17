@@ -30,7 +30,7 @@ thresholds['shape'] = benign[['concavity_2','compactness_2','concave points_2']]
 thresholds['texture'] = benign[['texture_2','smoothness_2']].quantile(0.75).mean()
 thresholds['homogeneity'] = benign[['symmetry_2','fractal dimension_2']].quantile(0.75).mean()
 
-#define a simple rule-based classifier that flags a case as malignant if any of the following conditions are met:
+#1:define a simple rule-based classifier that flags a case as malignant if any of the following conditions are met:
 def rule_classifier(x): 
     size_abnormal= (x[['radius_2','area_2','perimeter_2']].mean(axis=1) > thresholds['size'])
 
@@ -41,13 +41,13 @@ def rule_classifier(x):
     homogeneity_abnormal = (x[['symmetry_2','fractal dimension_2']].mean(axis=1) > thresholds['homogeneity'])
     return (size_abnormal | shape_abnormal | texture_abnormal | homogeneity_abnormal).astype(int)
 
-#used a random forest as a more complex model for comparison
+#2:used a random forest as a more complex model for comparison
 rf = RandomForestClassifier( n_estimators=200, random_state=42)
 rf.fit(X_train, y_train)
 rf_preds = rf.predict(X_test)
 rule_preds = rule_classifier(X_test)
 
-#a small decision tree to show how a simple model can still perform reasonably well
+#3:a small decision tree to show how a simple model can still perform reasonably well
 tree = DecisionTreeClassifier(max_depth=3, random_state=42)
 tree.fit(X_train, y_train)
 tree_preds = tree.predict(X_test)
